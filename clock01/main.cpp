@@ -14,7 +14,7 @@ void clrScreenArray ();
 
 int main(void)
 {
-	uint8_t currentScreen = 2;
+	uint8_t currentScreen = 0;
 	
 	/*
 		current Screen = 0 - regular clock mode;
@@ -78,7 +78,10 @@ uint8_t rtcCycle () {
 		uint8_t key = keyChecker();
 		if(key) {
 			if (key == 1) return 1;
-			if (key == 2) return 3;
+			if (key == 3) {
+			
+			return 3;
+			}
 
 		}
 	}
@@ -95,6 +98,7 @@ uint8_t dsMode() {
 	screen_arr[1] = '-';
 	screen_arr[0] = '-';
 	uint16_t inner_counter = 0;
+	uint8_t exit_counter = 0;
 	while(true){
 		if(inner_counter == 0)
 		{
@@ -140,7 +144,11 @@ uint8_t dsMode() {
 		_delay_ms(1);
 		if(inner_counter <=1000)
 		inner_counter +=1;
-		else inner_counter =0;
+		else {
+			inner_counter =0;
+			exit_counter +=1;
+			if(exit_counter>7) return 0;
+		}
 	}
 }
 
@@ -153,7 +161,7 @@ uint8_t acbMode() {
 		AdcClass adcOb;
 		adcOb.Init();
 		sei();
-		
+		uint16_t exitCouter = 0;
 		while(true){
 			adcOb.MesureVoltage(PORTC0);
 			screen_arr[2] = (uint8_t)adcOb.Voltage/10;
@@ -167,6 +175,9 @@ uint8_t acbMode() {
 				//if (key == 2) return 3;
 
 			}
+			_delay_ms(1);
+			exitCouter += 1;
+			if(exitCouter > 7000) return 0;
 		}
 }
 
@@ -183,11 +194,13 @@ uint8_t setupMinutes () {
 			}
 			if (key == 2) {
 			rtcSendMinutes (minutes);
+			screen_arr [1] = minutes / 10;
+			screen_arr [0] = minutes % 10;
 			return 4;
 			}
 
 		}
-		if (blinker > 32768) {
+		if (blinker > 250) {
 			screen_arr [1] = minutes / 10;
 			screen_arr [0] = minutes % 10;
 		}
@@ -195,13 +208,13 @@ uint8_t setupMinutes () {
 			screen_arr [1] = -1;
 			screen_arr [0] = -1;
 		}
-		if (blinker < 65535) {
+		if (blinker < 500) {
 			blinker += 1;
 		}
 		else {
 			blinker = 0;
 		}
-
+		_delay_ms(1);
 
 	}
 }
@@ -222,7 +235,7 @@ uint8_t setupHours () {
 			}
 
 		}
-		if (blinker > 32768) {
+		if (blinker > 250) {
 			screen_arr [3] = hours / 10;
 			screen_arr [2] = hours % 10;
 		}
@@ -230,12 +243,13 @@ uint8_t setupHours () {
 			screen_arr [3] = -1;
 			screen_arr [2] = -1;
 		}
-		if (blinker < 65535) {
+		if (blinker < 500) {
 			blinker += 1;
 		}
 		else {
 			blinker = 0;
 		}
+		_delay_ms(1);
 
 
 	}
@@ -246,17 +260,21 @@ uint8_t keyChecker () {
 *PORTD3 MODE
 *PORTD4 SETUP
 */	static uint8_t keyStatePrevious = 0;
-	static uint8_t times = 0;
+	static uint16_t times = 0;
 	//DDRD &=~(1<<PORTD3|1<<PORTD4); //Change direction to input
 	//PORTD |= 1<<PORTD3|1<<PORTD4; //Enable pull-up resistors
 	uint8_t keyState = PIND;
 	 keyState = (~keyState >> 3) & 3;
-	if (keyState == keyStatePrevious) {
-		if (times < 255) {
+	if (keyState == keyStatePrevious && keyState) {
+		if (times < 1500) {
 			times += 1;
+			_delay_ms(1);
 		}
 		if (times == 10) {
 			return keyState;
+		}
+		if (times == 1000) {
+			return 3;
 		}
 	}
 	else {
