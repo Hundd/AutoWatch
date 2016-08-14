@@ -66,18 +66,59 @@ volatile void EnableTimer0Interrupt() {
 	TCCR0B = 2;//Prescaler
 }
 uint8_t rtcCycle () {
+	int8_t startLowEnergy = -1;
+	int8_t endLowEnergy = -1;
+
+
+
+
 	uint8_t timeArr[0x13];
 	while (true) {
+		bool powerGood = PIND & 1;
+		bool powerGoodDelay = true;
+		const uint8_t POWERDELAY = 5;//Delay Before the lights is off
 		readTime(timeArr);
-		screen_arr[0] = timeArr[1] & 0x0F;
-		screen_arr[1] = timeArr[1] >> 4;
-		screen_arr[2] = timeArr[2] & 0x0F;
-		screen_arr[3] = timeArr[2] >> 4;
-		screen_arr[4] = 2;//Dot Point Position
-		//_delay_ms(100);
+		if (powerGood || powerGoodDelay) {
+			screen_arr[0] = timeArr[1] & 0x0F;
+			screen_arr[1] = timeArr[1] >> 4;
+			screen_arr[2] = timeArr[2] & 0x0F;
+			screen_arr[3] = timeArr[2] >> 4;
+			screen_arr[4] = 2;//Dot Point Position
+			
+		}
+		if(powerGood) {
+			startLowEnergy = -1;
+			endLowEnergy = -1;
+			powerGoodDelay = true;
+		}
+		else 
+		{
+			if(startLowEnergy == -1) {
+				startLowEnergy = ((timeArr[1] & 0x0F) + (timeArr[1] >> 4)*10 + POWERDELAY)%60;
+			}
+			else {
+				endLowEnergy = (timeArr[1] & 0x0F) + (timeArr[1] >> 4)*10;
+				if(startLowEnergy == endLowEnergy) {
+					clrScreenArray();
+					powerGoodDelay = false;
+				}
+			}
+			
+			}
+		
+		
+		
 		uint8_t key = keyChecker();
 		if(key) {
-			if (key == 1) return 1;
+			if (key == 1) {
+				if(!powerGoodDelay) {
+					powerGoodDelay = true;
+					startLowEnergy = -1;
+					endLowEnergy = -1;
+				}
+				else 
+				return 1;
+			}
 			if (key == 3) {
 			
 			return 3;

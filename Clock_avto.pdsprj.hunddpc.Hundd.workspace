@@ -6,11 +6,12 @@
  </FRAME>
  <MODULE name="VSMDEBUG">
   <PWI>
-   <POPUP w="800" x="100" flags="00000002" y="129" h="200" pid="0" iid="-1">
+   <POPUP w="800" x="479" flags="00000003" y="799" h="200" pid="0" iid="-1">
     <PROPERTIES>
      <ITEM name="Message Column Width">663</ITEM>
      <ITEM name="ShowGrid">No</ITEM>
      <ITEM name="Source Column Width">100</ITEM>
+     <ITEM name="Time Column Width">120</ITEM>
      <ITEM name="Version">100</ITEM>
     </PROPERTIES>
    </POPUP>
@@ -31,7 +32,7 @@
      <ITEM name="nItems">0</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="30" x="196" flags="00000009" y="350" h="16" pid="3" iid="1">
+   <POPUP w="30" x="238" flags="00000009" y="400" h="16" pid="3" iid="1">
     <PROPERTIES/>
    </POPUP>
    <POPUP w="8" x="160" flags="0000000a" y="189" h="1" pid="10" iid="1">
@@ -94,9 +95,23 @@
      <ITEM name="TopLineAddress">00000020</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="600" x="297" flags="0000002b" y="624" h="400" pid="1" iid="1">
+   <POPUP w="652" x="-105" flags="0000802b" y="238" h="653" pid="1" iid="1">
     <PROPERTIES>
-     <ITEM name="Breakpoint 0">"__vector_16",0090,0000,07C4,0F07,-1
+     <ITEM name="Breakpoint 0">"__vector_16",0462,0000,07C4,0F07,-1
+</ITEM>
+     <ITEM name="Breakpoint 1">"_Z8rtcCyclev",0B22,0068,F5BB,0F07,-1
+</ITEM>
+     <ITEM name="Breakpoint 2">"_Z8rtcCyclev",0B26,006C,575E,0F07,1
+</ITEM>
+     <ITEM name="Breakpoint 3">"_Z8rtcCyclev",0B36,007C,0F73,0F07,-1
+</ITEM>
+     <ITEM name="Breakpoint 4">"_Z8rtcCyclev",0AF6,003C,0959,0F07,-1
+</ITEM>
+     <ITEM name="Breakpoint 5">"_Z6dsModev",059A,002E,10A8,0F07,-1
+</ITEM>
+     <ITEM name="Breakpoint 6">"_Z6dsModev",06D0,0164,0FCB,0F07,-1
+</ITEM>
+     <ITEM name="Breakpoint 7">"_Z10keyCheckerv",04F6,0000,A835,0F07,-1
 </ITEM>
      <ITEM name="CaseSensitive">No</ITEM>
      <ITEM name="DISPADDRS">Yes</ITEM>
@@ -104,15 +119,15 @@
      <ITEM name="DISPOPCODES">No</ITEM>
      <ITEM name="FIXUPBPTS">Yes</ITEM>
      <ITEM name="WordsOnly">No</ITEM>
-     <ITEM name="nBreakpoints">1</ITEM>
+     <ITEM name="nBreakpoints">0</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="300" x="948" flags="0000000b" y="574" h="300" pid="2" iid="1">
+   <POPUP w="364" x="873" flags="0000000b" y="724" h="300" pid="2" iid="1">
     <PROPERTIES>
      <ITEM name="Address Column Width">94</ITEM>
      <ITEM name="AutoResize">No</ITEM>
      <ITEM name="Gridlines">Yes</ITEM>
-     <ITEM name="Name Column Width">94</ITEM>
+     <ITEM name="Name Column Width">166</ITEM>
      <ITEM name="ShowAddresses">Yes</ITEM>
      <ITEM name="ShowGlobals">Yes</ITEM>
      <ITEM name="ShowPreviousValues">No</ITEM>
@@ -144,7 +159,7 @@
      <ITEM name="TopLineAddress">00000000</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="20" x="285" flags="00000001" y="411" h="3" pid="1" iid="7">
+   <POPUP w="20" x="334" flags="00000001" y="234" h="3" pid="1" iid="7">
     <PROPERTIES/>
    </POPUP>
    <POPUP w="8" x="380" flags="00000008" y="409" h="32" pid="2" iid="7">
@@ -157,7 +172,7 @@
      <ITEM name="TopLineAddress">00000000</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="450" x="830" flags="00008023" y="486" h="250" pid="0" iid="19">
+   <POPUP w="450" x="830" flags="00000023" y="486" h="250" pid="0" iid="19">
     <PROPERTIES>
      <ITEM name="ComboBox1000">S</ITEM>
      <ITEM name="ComboBox1001">Sr</ITEM>
