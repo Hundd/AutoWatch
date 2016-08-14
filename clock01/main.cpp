@@ -73,9 +73,12 @@ uint8_t rtcCycle () {
 
 
 	uint8_t timeArr[0x13];
+
+	bool powerGoodDelay = true;
 	while (true) {
 		bool powerGood = PIND & 1;
-		bool powerGoodDelay = true;
+		//bool powerGood = false;
+		
 		const uint8_t POWERDELAY = 5;//Delay Before the lights is off
 		readTime(timeArr);
 		if (powerGood || powerGoodDelay) {
