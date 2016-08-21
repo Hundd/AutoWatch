@@ -3,7 +3,9 @@
 #include "termo_teplica.c"
 #include "ADC.cpp"
 volatile uint8_t screen_arr[5];
+volatile int8_t opacity = 16;
 volatile void EnableTimer0Interrupt();
+AdcClass adcOb;
 uint8_t rtcCycle();
 uint8_t dsMode();
 uint8_t acbMode();
@@ -31,6 +33,7 @@ int main(void)
 	EnableTimer0Interrupt();
 	sei();
 	rtcInit();
+	adcOb.Init();
     while (1) 
     {
 		switch (currentScreen) {
@@ -53,12 +56,16 @@ int main(void)
 
 ISR(TIMER0_OVF_vect){
 	static uint8_t iov=0;
+	static uint8_t opacityDelay = 0;
 	ClrScr();
-	Display7seg(screen_arr[iov],iov == screen_arr[4]);
-	NextDigit(4-iov);
-	//Display7seg(screen_arr[iov],iov == screen_arr[4]);
-	iov += 1;
-	if(iov > 3) iov=0;
+	if (opacityDelay == opacity) {		
+		Display7seg(screen_arr[iov],iov == screen_arr[4]);
+		NextDigit(4-iov);
+		iov += 1;
+		if(iov > 3) iov=0;
+	}
+	opacityDelay = opacityDelay < opacity ? opacityDelay + 1 : 0;
+	
 }
 volatile void EnableTimer0Interrupt() {
 	
@@ -75,6 +82,8 @@ uint8_t rtcCycle () {
 	uint8_t timeArr[0x13];
 
 	bool powerGoodDelay = true;
+
+
 	while (true) {
 		bool powerGood = PIND & 1;
 		//bool powerGood = false;
@@ -128,6 +137,9 @@ uint8_t rtcCycle () {
 			}
 
 		}
+		adcOb.MesureVoltage(PORTC1);
+		opacity = 15 - adcOb.Data/64;
+		if(opacity < 0) opacity = 0;
 	}
 	
 }
@@ -202,8 +214,6 @@ uint8_t acbMode() {
 		screen_arr[2] = -1;
 		screen_arr[1] = -1;
 		screen_arr[0] = -1;
-		AdcClass adcOb;
-		adcOb.Init();
 		sei();
 		uint16_t exitCouter = 0;
 		while(true){
