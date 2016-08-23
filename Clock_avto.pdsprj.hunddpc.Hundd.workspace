@@ -95,7 +95,7 @@
      <ITEM name="TopLineAddress">00000020</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="652" x="62" flags="0000802b" y="238" h="653" pid="1" iid="1">
+   <POPUP w="652" x="62" flags="0000002b" y="238" h="653" pid="1" iid="1">
     <PROPERTIES>
      <ITEM name="Breakpoint 0">"__vector_16",0462,0000,07C4,0F07,-1
 </ITEM>
@@ -159,7 +159,7 @@
      <ITEM name="TopLineAddress">00000000</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="20" x="334" flags="00000001" y="234" h="3" pid="1" iid="7">
+   <POPUP w="20" x="280" flags="00000001" y="180" h="3" pid="1" iid="7">
     <PROPERTIES/>
    </POPUP>
    <POPUP w="8" x="380" flags="00000008" y="409" h="32" pid="2" iid="7">
@@ -187,6 +187,12 @@
      <ITEM name="HSplitter1Pos">100</ITEM>
      <ITEM name="VSplitter1Pos">238</ITEM>
     </PROPERTIES>
+   </POPUP>
+   <POPUP w="290" x="100" flags="00000000" y="129" h="189" pid="0" iid="22">
+    <PROPERTIES/>
+   </POPUP>
+   <POPUP w="695" x="507" flags="00008001" y="571" h="453" pid="0" iid="25">
+    <PROPERTIES/>
    </POPUP>
   </PWI>
  </MODULE>

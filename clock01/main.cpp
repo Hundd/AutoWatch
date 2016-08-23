@@ -3,7 +3,8 @@
 #include "termo_teplica.c"
 #include "ADC.cpp"
 volatile uint8_t screen_arr[5];
-volatile int8_t opacity = 16;
+volatile int8_t opacity = 15;
+//volatile float opacity = 15;
 volatile void EnableTimer0Interrupt();
 AdcClass adcOb;
 uint8_t rtcCycle();
@@ -75,7 +76,7 @@ volatile void EnableTimer0Interrupt() {
 uint8_t rtcCycle () {
 	int8_t startLowEnergy = -1;
 	int8_t endLowEnergy = -1;
-
+	static double adcAvg = 1023;
 
 
 
@@ -138,7 +139,11 @@ uint8_t rtcCycle () {
 
 		}
 		adcOb.MesureVoltage(PORTC1);
-		opacity = 15 - adcOb.Data/64;
+		//opacity = 15 - adcOb.Data/64;
+		//Opacity Correction
+		const double corrector = 4096;
+		adcAvg = adcAvg*(corrector -1)/corrector+ (double)adcOb.Data/corrector;
+		opacity = 15 - adcAvg/64;
 		if(opacity < 0) opacity = 0;
 	}
 	
@@ -216,11 +221,13 @@ uint8_t acbMode() {
 		screen_arr[0] = -1;
 		sei();
 		uint16_t exitCouter = 0;
+		adcOb.MesureVoltage(PORTC0);
+		screen_arr[2] = (uint8_t)adcOb.Voltage/10;
+		screen_arr[1] = (uint8_t)adcOb.Voltage%10;
+		screen_arr[0] = ((uint8_t)(adcOb.Voltage*10))%10;
 		while(true){
-			adcOb.MesureVoltage(PORTC0);
-			screen_arr[2] = (uint8_t)adcOb.Voltage/10;
-			screen_arr[1] = (uint8_t)adcOb.Voltage%10;
-			screen_arr[0] = ((uint8_t)(adcOb.Voltage*10))%10;
+			
+			
 
 
 			uint8_t key = keyChecker();
@@ -231,6 +238,13 @@ uint8_t acbMode() {
 			}
 			_delay_ms(1);
 			exitCouter += 1;
+			if(exitCouter % 1000) {
+				//Do it every second
+				adcOb.MesureVoltage(PORTC0);
+				screen_arr[2] = (uint8_t)adcOb.Voltage/10;
+				screen_arr[1] = (uint8_t)adcOb.Voltage%10;
+				screen_arr[0] = ((uint8_t)(adcOb.Voltage*10))%10;
+			}
 			if(exitCouter > 7000) return 0;
 		}
 }
