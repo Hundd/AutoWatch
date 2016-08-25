@@ -1556,7 +1556,7 @@ uint8_t acbMode() {
 			}
 			_delay_ms(1);
 			exitCouter += 1;
-			if(exitCouter % 1000) {
+			if(exitCouter % 1000 == 0) {
      89e:	0f 2e       	mov	r0, r31
      8a0:	f8 ee       	ldi	r31, 0xE8	; 232
      8a2:	ef 2e       	mov	r14, r31
@@ -1626,7 +1626,7 @@ uint8_t acbMode() {
 			_delay_ms(1);
 			exitCouter += 1;
      8e4:	21 96       	adiw	r28, 0x01	; 1
-			if(exitCouter % 1000) {
+			if(exitCouter % 1000 == 0) {
      8e6:	9e 01       	movw	r18, r28
      8e8:	36 95       	lsr	r19
      8ea:	27 95       	ror	r18
@@ -1652,7 +1652,7 @@ uint8_t acbMode() {
      914:	11 24       	eor	r1, r1
      916:	c2 17       	cp	r28, r18
      918:	d3 07       	cpc	r29, r19
-     91a:	09 f4       	brne	.+2      	; 0x91e <__stack+0x1f>
+     91a:	09 f0       	breq	.+2      	; 0x91e <__stack+0x1f>
      91c:	51 c0       	rjmp	.+162    	; 0x9c0 <__stack+0xc1>
 	
 		{Data = ADC;}

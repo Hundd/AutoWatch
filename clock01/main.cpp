@@ -238,7 +238,7 @@ uint8_t acbMode() {
 			}
 			_delay_ms(1);
 			exitCouter += 1;
-			if(exitCouter % 1000) {
+			if(exitCouter % 1000 == 0) {
 				//Do it every second
 				adcOb.MesureVoltage(PORTC0);
 				screen_arr[2] = (uint8_t)adcOb.Voltage/10;
