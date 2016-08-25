@@ -1,9 +1,9 @@
- 
+ #define MAXGRADES 15
 #include "mainHeader.h"
 #include "termo_teplica.c"
 #include "ADC.cpp"
 volatile uint8_t screen_arr[5];
-volatile int8_t opacity = 15;
+volatile int8_t opacity = MAXGRADES;
 //volatile float opacity = 15;
 volatile void EnableTimer0Interrupt();
 AdcClass adcOb;
@@ -58,20 +58,24 @@ int main(void)
 ISR(TIMER0_OVF_vect){
 	static uint8_t iov=0;
 	static uint8_t opacityDelay = 0;
-	ClrScr();
-	if (opacityDelay == opacity) {		
+	
+	if (opacityDelay == MAXGRADES) {	
+		ClrScr();	
 		Display7seg(screen_arr[iov],iov == screen_arr[4]);
 		NextDigit(4-iov);
 		iov += 1;
 		if(iov > 3) iov=0;
+	} 
+	else if(opacityDelay == (MAXGRADES - opacity)) {
+		ClrScr();
 	}
-	opacityDelay = opacityDelay < opacity ? opacityDelay + 1 : 0;
+	opacityDelay = opacityDelay < MAXGRADES ? opacityDelay + 1 : 0;
 	
 }
 volatile void EnableTimer0Interrupt() {
 	
 	TIMSK0|=1<<TOIE0;
-	TCCR0B = 2;//Prescaler
+	TCCR0B = 1;//Prescaler
 }
 uint8_t rtcCycle () {
 	int8_t startLowEnergy = -1;
@@ -141,9 +145,9 @@ uint8_t rtcCycle () {
 		adcOb.MesureVoltage(PORTC1);
 		//opacity = 15 - adcOb.Data/64;
 		//Opacity Correction
-		const double corrector = 4096;
+		const double corrector = 1024;
 		adcAvg = adcAvg*(corrector -1)/corrector+ (double)adcOb.Data/corrector;
-		opacity = 15 - adcAvg/64;
+		opacity = MAXGRADES - adcAvg/(1024/(MAXGRADES+1));
 		if(opacity < 0) opacity = 0;
 	}
 	

@@ -15,19 +15,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   5 .debug_aranges 00000168  00000000  00000000  000019c4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00001fd9  00000000  00000000  00001b2c  2**0
+  6 .debug_info   00001fe3  00000000  00000000  00001b2c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 0000077f  00000000  00000000  00003b05  2**0
+  7 .debug_abbrev 0000077f  00000000  00000000  00003b0f  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   000009d7  00000000  00000000  00004284  2**0
+  8 .debug_line   000009d9  00000000  00000000  0000428e  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000608  00000000  00000000  00004c5c  2**2
+  9 .debug_frame  00000608  00000000  00000000  00004c68  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000009f3  00000000  00000000  00005264  2**0
+ 10 .debug_str    000009f3  00000000  00000000  00005270  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00001dc9  00000000  00000000  00005c57  2**0
+ 11 .debug_loc    00001dc9  00000000  00000000  00005c63  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000001e0  00000000  00000000  00007a20  2**0
+ 12 .debug_ranges 000001e0  00000000  00000000  00007a2c  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -797,63 +797,67 @@ ISR(TIMER0_OVF_vect){
      49a:	ff 93       	push	r31
 	static uint8_t iov=0;
 	static uint8_t opacityDelay = 0;
-	ClrScr();
-     49c:	0e 94 82 09 	call	0x1304	; 0x1304 <_Z6ClrScrv>
-	if (opacityDelay == opacity) {		
-     4a0:	80 91 04 01 	lds	r24, 0x0104
-     4a4:	20 91 0a 01 	lds	r18, 0x010A
-     4a8:	30 e0       	ldi	r19, 0x00	; 0
-     4aa:	08 2e       	mov	r0, r24
-     4ac:	00 0c       	add	r0, r0
-     4ae:	99 0b       	sbc	r25, r25
-     4b0:	28 17       	cp	r18, r24
-     4b2:	39 07       	cpc	r19, r25
-     4b4:	f1 f4       	brne	.+60     	; 0x4f2 <__vector_16+0x78>
+	
+	if (opacityDelay == MAXGRADES) {	
+     49c:	80 91 0a 01 	lds	r24, 0x010A
+     4a0:	8f 30       	cpi	r24, 0x0F	; 15
+     4a2:	09 f5       	brne	.+66     	; 0x4e6 <__vector_16+0x6c>
+		ClrScr();	
+     4a4:	0e 94 82 09 	call	0x1304	; 0x1304 <_Z6ClrScrv>
 		Display7seg(screen_arr[iov],iov == screen_arr[4]);
-     4b6:	20 91 17 01 	lds	r18, 0x0117
-     4ba:	90 91 09 01 	lds	r25, 0x0109
-     4be:	e9 2f       	mov	r30, r25
-     4c0:	f0 e0       	ldi	r31, 0x00	; 0
-     4c2:	ed 5e       	subi	r30, 0xED	; 237
-     4c4:	fe 4f       	sbci	r31, 0xFE	; 254
-     4c6:	80 81       	ld	r24, Z
-     4c8:	61 e0       	ldi	r22, 0x01	; 1
-     4ca:	29 13       	cpse	r18, r25
-     4cc:	60 e0       	ldi	r22, 0x00	; 0
-     4ce:	0e 94 9b 09 	call	0x1336	; 0x1336 <_Z11Display7seghb>
+     4a8:	20 91 17 01 	lds	r18, 0x0117
+     4ac:	90 91 09 01 	lds	r25, 0x0109
+     4b0:	e9 2f       	mov	r30, r25
+     4b2:	f0 e0       	ldi	r31, 0x00	; 0
+     4b4:	ed 5e       	subi	r30, 0xED	; 237
+     4b6:	fe 4f       	sbci	r31, 0xFE	; 254
+     4b8:	80 81       	ld	r24, Z
+     4ba:	61 e0       	ldi	r22, 0x01	; 1
+     4bc:	29 13       	cpse	r18, r25
+     4be:	60 e0       	ldi	r22, 0x00	; 0
+     4c0:	0e 94 9b 09 	call	0x1336	; 0x1336 <_Z11Display7seghb>
 		NextDigit(4-iov);
-     4d2:	90 91 09 01 	lds	r25, 0x0109
-     4d6:	84 e0       	ldi	r24, 0x04	; 4
-     4d8:	89 1b       	sub	r24, r25
-     4da:	0e 94 fb 09 	call	0x13f6	; 0x13f6 <_Z9NextDigith>
+     4c4:	90 91 09 01 	lds	r25, 0x0109
+     4c8:	84 e0       	ldi	r24, 0x04	; 4
+     4ca:	89 1b       	sub	r24, r25
+     4cc:	0e 94 fb 09 	call	0x13f6	; 0x13f6 <_Z9NextDigith>
 		iov += 1;
-     4de:	80 91 09 01 	lds	r24, 0x0109
-     4e2:	8f 5f       	subi	r24, 0xFF	; 255
+     4d0:	80 91 09 01 	lds	r24, 0x0109
+     4d4:	8f 5f       	subi	r24, 0xFF	; 255
 		if(iov > 3) iov=0;
-     4e4:	84 30       	cpi	r24, 0x04	; 4
-     4e6:	18 f4       	brcc	.+6      	; 0x4ee <__vector_16+0x74>
-	static uint8_t opacityDelay = 0;
-	ClrScr();
-	if (opacityDelay == opacity) {		
+     4d6:	84 30       	cpi	r24, 0x04	; 4
+     4d8:	18 f4       	brcc	.+6      	; 0x4e0 <__vector_16+0x66>
+	
+	if (opacityDelay == MAXGRADES) {	
+		ClrScr();	
 		Display7seg(screen_arr[iov],iov == screen_arr[4]);
 		NextDigit(4-iov);
 		iov += 1;
-     4e8:	80 93 09 01 	sts	0x0109, r24
-     4ec:	02 c0       	rjmp	.+4      	; 0x4f2 <__vector_16+0x78>
+     4da:	80 93 09 01 	sts	0x0109, r24
+     4de:	11 c0       	rjmp	.+34     	; 0x502 <__vector_16+0x88>
 		if(iov > 3) iov=0;
-     4ee:	10 92 09 01 	sts	0x0109, r1
+     4e0:	10 92 09 01 	sts	0x0109, r1
+     4e4:	0e c0       	rjmp	.+28     	; 0x502 <__vector_16+0x88>
+	} 
+	else if(opacityDelay == (MAXGRADES - opacity)) {
+     4e6:	40 91 04 01 	lds	r20, 0x0104
+     4ea:	90 e0       	ldi	r25, 0x00	; 0
+     4ec:	2f e0       	ldi	r18, 0x0F	; 15
+     4ee:	30 e0       	ldi	r19, 0x00	; 0
+     4f0:	24 1b       	sub	r18, r20
+     4f2:	31 09       	sbc	r19, r1
+     4f4:	47 fd       	sbrc	r20, 7
+     4f6:	33 95       	inc	r19
+     4f8:	82 17       	cp	r24, r18
+     4fa:	93 07       	cpc	r25, r19
+     4fc:	11 f4       	brne	.+4      	; 0x502 <__vector_16+0x88>
+		ClrScr();
+     4fe:	0e 94 82 09 	call	0x1304	; 0x1304 <_Z6ClrScrv>
 	}
-	opacityDelay = opacityDelay < opacity ? opacityDelay + 1 : 0;
-     4f2:	80 91 0a 01 	lds	r24, 0x010A
-     4f6:	20 91 04 01 	lds	r18, 0x0104
-     4fa:	48 2f       	mov	r20, r24
-     4fc:	50 e0       	ldi	r21, 0x00	; 0
-     4fe:	02 2e       	mov	r0, r18
-     500:	00 0c       	add	r0, r0
-     502:	33 0b       	sbc	r19, r19
-     504:	42 17       	cp	r20, r18
-     506:	53 07       	cpc	r21, r19
-     508:	14 f4       	brge	.+4      	; 0x50e <__vector_16+0x94>
+	opacityDelay = opacityDelay < MAXGRADES ? opacityDelay + 1 : 0;
+     502:	80 91 0a 01 	lds	r24, 0x010A
+     506:	8f 30       	cpi	r24, 0x0F	; 15
+     508:	10 f4       	brcc	.+4      	; 0x50e <__vector_16+0x94>
      50a:	8f 5f       	subi	r24, 0xFF	; 255
      50c:	01 c0       	rjmp	.+2      	; 0x510 <__vector_16+0x96>
      50e:	80 e0       	ldi	r24, 0x00	; 0
@@ -887,8 +891,8 @@ volatile void EnableTimer0Interrupt() {
      53a:	80 81       	ld	r24, Z
      53c:	81 60       	ori	r24, 0x01	; 1
      53e:	80 83       	st	Z, r24
-	TCCR0B = 2;//Prescaler
-     540:	82 e0       	ldi	r24, 0x02	; 2
+	TCCR0B = 1;//Prescaler
+     540:	81 e0       	ldi	r24, 0x01	; 1
      542:	85 bd       	out	0x25, r24	; 37
      544:	08 95       	ret
 
@@ -2303,7 +2307,7 @@ void clrScreenArray () {
 volatile void EnableTimer0Interrupt() {
 	
 	TIMSK0|=1<<TOIE0;
-	TCCR0B = 2;//Prescaler
+	TCCR0B = 1;//Prescaler
 }
 uint8_t rtcCycle () {
      c60:	2f 92       	push	r2
@@ -2342,7 +2346,7 @@ uint8_t rtcCycle () {
      c96:	53 94       	inc	r5
 	
 	TIMSK0|=1<<TOIE0;
-	TCCR0B = 2;//Prescaler
+	TCCR0B = 1;//Prescaler
 }
 uint8_t rtcCycle () {
 	int8_t startLowEnergy = -1;
@@ -2664,14 +2668,14 @@ uint8_t rtcCycle () {
 		adcOb.MesureVoltage(PORTC1);
 		//opacity = 15 - adcOb.Data/64;
 		//Opacity Correction
-		const double corrector = 4096;
+		const double corrector = 1024;
 		adcAvg = adcAvg*(corrector -1)/corrector+ (double)adcOb.Data/corrector;
      e08:	e0 90 18 01 	lds	r14, 0x0118
      e0c:	f0 90 19 01 	lds	r15, 0x0119
      e10:	20 e0       	ldi	r18, 0x00	; 0
-     e12:	30 ef       	ldi	r19, 0xF0	; 240
+     e12:	30 ec       	ldi	r19, 0xC0	; 192
      e14:	4f e7       	ldi	r20, 0x7F	; 127
-     e16:	55 e4       	ldi	r21, 0x45	; 69
+     e16:	54 e4       	ldi	r21, 0x44	; 68
      e18:	60 91 00 01 	lds	r22, 0x0100
      e1c:	70 91 01 01 	lds	r23, 0x0101
      e20:	80 91 02 01 	lds	r24, 0x0102
@@ -2680,7 +2684,7 @@ uint8_t rtcCycle () {
      e2c:	20 e0       	ldi	r18, 0x00	; 0
      e2e:	30 e0       	ldi	r19, 0x00	; 0
      e30:	40 e8       	ldi	r20, 0x80	; 128
-     e32:	59 e3       	ldi	r21, 0x39	; 57
+     e32:	5a e3       	ldi	r21, 0x3A	; 58
      e34:	0e 94 b1 0b 	call	0x1762	; 0x1762 <__mulsf3>
      e38:	6c 8b       	std	Y+20, r22	; 0x14
      e3a:	7d 8b       	std	Y+21, r23	; 0x15
@@ -2693,7 +2697,7 @@ uint8_t rtcCycle () {
      e4a:	20 e0       	ldi	r18, 0x00	; 0
      e4c:	30 e0       	ldi	r19, 0x00	; 0
      e4e:	40 e8       	ldi	r20, 0x80	; 128
-     e50:	59 e3       	ldi	r21, 0x39	; 57
+     e50:	5a e3       	ldi	r21, 0x3A	; 58
      e52:	0e 94 b1 0b 	call	0x1762	; 0x1762 <__mulsf3>
      e56:	9b 01       	movw	r18, r22
      e58:	ac 01       	movw	r20, r24
@@ -2706,7 +2710,7 @@ uint8_t rtcCycle () {
      e6a:	70 93 01 01 	sts	0x0101, r23
      e6e:	80 93 02 01 	sts	0x0102, r24
      e72:	90 93 03 01 	sts	0x0103, r25
-		opacity = 15 - adcAvg/64;
+		opacity = MAXGRADES - adcAvg/(1024/(MAXGRADES+1));
      e76:	20 e0       	ldi	r18, 0x00	; 0
      e78:	30 e0       	ldi	r19, 0x00	; 0
      e7a:	40 e8       	ldi	r20, 0x80	; 128
@@ -2742,7 +2746,7 @@ uint8_t rtcCycle () {
 			return 3;
      eae:	83 e0       	ldi	r24, 0x03	; 3
 		adcAvg = adcAvg*(corrector -1)/corrector+ (double)adcOb.Data/corrector;
-		opacity = 15 - adcAvg/64;
+		opacity = MAXGRADES - adcAvg/(1024/(MAXGRADES+1));
 		if(opacity < 0) opacity = 0;
 	}
 	
