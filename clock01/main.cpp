@@ -222,6 +222,8 @@ uint8_t acbMode() {
 		sei();
 		uint16_t exitCouter = 0;
 		adcOb.MesureVoltage(PORTC0);
+		_delay_ms(10);
+		adcOb.MesureVoltage(PORTC0);
 		screen_arr[2] = (uint8_t)adcOb.Voltage/10;
 		screen_arr[1] = (uint8_t)adcOb.Voltage%10;
 		screen_arr[0] = ((uint8_t)(adcOb.Voltage*10))%10;
@@ -241,6 +243,7 @@ uint8_t acbMode() {
 			if(exitCouter % 1000 == 0) {
 				//Do it every second
 				adcOb.MesureVoltage(PORTC0);
+				_delay_ms(1);
 				screen_arr[2] = (uint8_t)adcOb.Voltage/10;
 				screen_arr[1] = (uint8_t)adcOb.Voltage%10;
 				screen_arr[0] = ((uint8_t)(adcOb.Voltage*10))%10;
