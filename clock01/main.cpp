@@ -13,10 +13,13 @@ uint8_t dsMode();
 uint8_t acbMode();
 uint8_t setupMinutes();
 uint8_t setupHours();
+uint8_t setupTimer();
 uint8_t keyChecker();
 uint8_t timerMode();
 void clrScreenArray ();
+void displaySeconds(uint16_t secondsTotal);
 
+uint16_t alarmTime = TIMER_ALARM_TIME;
 int main(void)
 {
 	uint8_t currentScreen = 0;
@@ -51,6 +54,8 @@ int main(void)
 			case 4: currentScreen = setupHours();
 					break;
 			case 5: currentScreen = timerMode();
+					break;
+			case 6: currentScreen = setupTimer();
 					break;
 			default: currentScreen = rtcCycle();
 					 break;
@@ -121,6 +126,42 @@ void singleBeep() {
 	buzzer(false);
 }
 
+uint8_t setupTimer () {
+	while(true) {
+		displaySeconds(alarmTime);
+		uint8_t key = keyChecker();
+		if(key) {
+			if (key == 1) {
+				// short press button 1
+				alarmTime += 1;
+				singleBeep();
+			}
+		
+			if (key == 2 ) {
+				// short press button 2
+				alarmTime -= 1;
+				singleBeep();
+			}
+		
+			if (key == 3) {
+				// long press button 2
+				return 0;
+			}
+
+		}
+	}
+
+}
+
+
+void displaySeconds(uint16_t secondsTotal)
+{
+	screen_arr[0] = secondsTotal % 10;
+	screen_arr[1] = secondsTotal % 60 / 10;
+	screen_arr[2] = secondsTotal / 60 % 10;
+	screen_arr[3] = secondsTotal / 60 / 10;
+}
+
 uint8_t timerMode () {
 	uint8_t timeArr[0x13];
 	uint8_t currentSeconds = 0;
@@ -141,21 +182,19 @@ uint8_t timerMode () {
 		
 		lastSeconds = currentSeconds;
 		
-		screen_arr[0] = secondsTotal % 10;
-		screen_arr[1] = secondsTotal % 60 / 10;
-		screen_arr[2] = secondsTotal / 60 % 10;
-		screen_arr[3] = secondsTotal / 60 / 10;
+		displaySeconds(secondsTotal);
+
 		
 		if (conunerEnabled) {
-			if (secondsTotal == TIMER_ALARM_TIME) {
+			if (secondsTotal == alarmTime) {
 				buzzering = true;
 				buzzer(true);
 			}
-			if (buzzering && secondsTotal <= TIMER_ALARM_TIME + 4 && secondsTotal > TIMER_ALARM_TIME) {
-				buzzer((secondsTotal - TIMER_ALARM_TIME) % 2 - 1);
+			if (buzzering && secondsTotal <= alarmTime + 4 && secondsTotal > alarmTime) {
+				buzzer((secondsTotal - alarmTime) % 2 - 1);
 			}
 			
-			if (buzzering && secondsTotal > TIMER_ALARM_TIME + 4) {
+			if (buzzering && secondsTotal > alarmTime + 4) {
 				buzzer(false);
 			}
 		}
@@ -206,7 +245,7 @@ uint8_t rtcCycle () {
 
 
 	while (true) {
-		bool powerGood = PINC & 1;
+		bool powerGood = PIND & 1;
 		//bool powerGood = false;
 		
 		const uint8_t POWERDELAY = 5;//Delay Before the lights is off
@@ -435,7 +474,8 @@ uint8_t setupHours () {
 			}
 			if (key == 2) {
 			rtcSendHours (hours);
-			return 0;
+			
+			return 6;
 			}
 
 		}
@@ -465,19 +505,27 @@ uint8_t keyChecker () {
 *PORTD4 SETUP
 */	static uint8_t keyStatePrevious = 0;
 	static uint16_t times = 0;
+	static uint8_t savedKeyState = 0;
 	uint8_t keyState = PIND;
 	 keyState = (~keyState >> 3) & 3;
+	
 	if (keyState == keyStatePrevious && keyState) {
 		if (times < 1500) {
 			times += 1;
 			_delay_ms(1);
 		}
 		if (times == 10) {
-			return keyState;
+			savedKeyState = keyState;
 		}
 		if (times == 1000) {
-			return 3;
+			longBeep();
+			savedKeyState  = 3;
 		}
+	} else if(savedKeyState) {
+		uint8_t tempKeyState = savedKeyState;
+		savedKeyState  = 0;
+
+		return tempKeyState;
 	}
 	else {
 		keyStatePrevious = keyState;
