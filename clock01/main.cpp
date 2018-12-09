@@ -1,10 +1,11 @@
  #define MAXGRADES 15
+ #define TIMER_ALARM_TIME 27
+ 
 #include "mainHeader.h"
 #include "termo_teplica.c"
 #include "ADC.cpp"
 volatile uint8_t screen_arr[5];
 volatile int8_t opacity = MAXGRADES;
-//volatile float opacity = 15;
 volatile void EnableTimer0Interrupt();
 AdcClass adcOb;
 uint8_t rtcCycle();
@@ -13,6 +14,7 @@ uint8_t acbMode();
 uint8_t setupMinutes();
 uint8_t setupHours();
 uint8_t keyChecker();
+uint8_t timerMode();
 void clrScreenArray ();
 
 int main(void)
@@ -27,7 +29,7 @@ int main(void)
 		current Screen = 4 - setum hours mode;
 	*/
 
-	DDRD &=~(1<<PORTD3|1<<PORTD4); //Change direction to input
+	DDRD &=~(1<< 3|1<<PORTD4); //Change direction to input
 	PORTD |= 1<<PORTD3|1<<PORTD4; //Enable pull-up resistors
 
 	clrScreenArray();//Start from blank screen
@@ -47,6 +49,8 @@ int main(void)
 			case 3: currentScreen = setupMinutes();
 					break;
 			case 4: currentScreen = setupHours();
+					break;
+			case 5: currentScreen = timerMode();
 					break;
 			default: currentScreen = rtcCycle();
 					 break;
@@ -77,12 +81,124 @@ volatile void EnableTimer0Interrupt() {
 	TIMSK0|=1<<TOIE0;
 	TCCR0B = 1;//Prescaler
 }
+
+void resetTimer() {
+	screen_arr[4] = 2; // DP position
+	screen_arr[3] = 0;
+	screen_arr[2] = 0;
+	screen_arr[1] = 0;
+	screen_arr[0] = 0;
+}
+
+void buzzer(bool on) {
+	if(on) {
+		DDRB |= 1 << PORTB6;
+		PORTB &= ~(1 << PORTB6);
+	} else {
+		PORTB |= 1 << PORTB6;
+	}
+}
+
+void doubleBeep() {
+	buzzer(true);
+	_delay_ms(50);
+	buzzer(false);
+	_delay_ms(50);
+	buzzer(true);
+	_delay_ms(50);
+	buzzer(false);
+}
+
+void longBeep() {
+	buzzer(true);
+	_delay_ms(500);
+	buzzer(false);
+}
+
+void singleBeep() {
+	buzzer(true);
+	_delay_ms(100);
+	buzzer(false);
+}
+
+uint8_t timerMode () {
+	uint8_t timeArr[0x13];
+	uint8_t currentSeconds = 0;
+	uint8_t lastSeconds = 0;
+	uint16_t secondsTotal = 0;
+	bool conunerEnabled = false;
+	bool buzzering = false;
+	resetTimer();
+	doubleBeep();
+	
+	while(true) {
+		readTime(timeArr);
+		currentSeconds = timeArr[0];
+		
+		if (conunerEnabled && currentSeconds != lastSeconds) {
+			secondsTotal += 1;
+		}
+		
+		lastSeconds = currentSeconds;
+		
+		screen_arr[0] = secondsTotal % 10;
+		screen_arr[1] = secondsTotal % 60 / 10;
+		screen_arr[2] = secondsTotal / 60 % 10;
+		screen_arr[3] = secondsTotal / 60 / 10;
+		
+		if (conunerEnabled) {
+			if (secondsTotal == TIMER_ALARM_TIME) {
+				buzzering = true;
+				buzzer(true);
+			}
+			if (buzzering && secondsTotal <= TIMER_ALARM_TIME + 4 && secondsTotal > TIMER_ALARM_TIME) {
+				buzzer((secondsTotal - TIMER_ALARM_TIME) % 2 - 1);
+			}
+			
+			if (buzzering && secondsTotal > TIMER_ALARM_TIME + 4) {
+				buzzer(false);
+			}
+		}
+		
+		if (secondsTotal > 15 * 60) {
+			return 0;
+		}
+		
+		uint8_t key = keyChecker();
+		
+		if(key) {
+			if (key == 1) {
+				// short press button 1
+				singleBeep();
+				buzzering = false;
+				conunerEnabled = true;
+			}
+			
+			if (key == 2 ) {
+				// short press button 2
+				doubleBeep();
+				secondsTotal = 0;
+				conunerEnabled = false;
+				buzzering = false;
+				resetTimer();
+			}
+			
+			if (key == 3) {
+				// long press button 2
+				longBeep();
+				return 0;
+			}
+
+		}
+		
+		_delay_ms(1);
+	}
+}
+
 uint8_t rtcCycle () {
 	int8_t startLowEnergy = -1;
 	int8_t endLowEnergy = -1;
 	static double adcAvg = 1023;
-
-
 
 	uint8_t timeArr[0x13];
 
@@ -90,11 +206,13 @@ uint8_t rtcCycle () {
 
 
 	while (true) {
-		bool powerGood = PIND & 1;
+		bool powerGood = PINC & 1;
 		//bool powerGood = false;
 		
 		const uint8_t POWERDELAY = 5;//Delay Before the lights is off
+		
 		readTime(timeArr);
+		
 		if (powerGood || powerGoodDelay) {
 			screen_arr[0] = timeArr[1] & 0x0F;
 			screen_arr[1] = timeArr[1] >> 4;
@@ -128,6 +246,7 @@ uint8_t rtcCycle () {
 		uint8_t key = keyChecker();
 		if(key) {
 			if (key == 1) {
+				// short press button 1
 				if(!powerGoodDelay) {
 					powerGoodDelay = true;
 					startLowEnergy = -1;
@@ -136,14 +255,20 @@ uint8_t rtcCycle () {
 				else 
 				return 1;
 			}
-			if (key == 3) {
 			
-			return 3;
+			if (key == 2 ) {
+				// short press button 2
+				return 5;
+			}
+			
+			if (key == 3) {
+				// long press button 2
+				return 3;
 			}
 
 		}
 		adcOb.MesureVoltage(PORTC1);
-		//opacity = 15 - adcOb.Data/64;
+
 		//Opacity Correction
 		const double corrector = 1024;
 		adcAvg = adcAvg*(corrector -1)/corrector+ (double)adcOb.Data/corrector;
@@ -203,7 +328,11 @@ uint8_t dsMode() {
 		uint8_t key = keyChecker();
 		if(key) {
 			if (key == 1) return 2;
-			//if (key == 2) return 3;
+			
+			if (key == 2 ) {
+				// short press button 2
+				return 5;
+			}
 
 		}
 		_delay_ms(1);
@@ -336,8 +465,6 @@ uint8_t keyChecker () {
 *PORTD4 SETUP
 */	static uint8_t keyStatePrevious = 0;
 	static uint16_t times = 0;
-	//DDRD &=~(1<<PORTD3|1<<PORTD4); //Change direction to input
-	//PORTD |= 1<<PORTD3|1<<PORTD4; //Enable pull-up resistors
 	uint8_t keyState = PIND;
 	 keyState = (~keyState >> 3) & 3;
 	if (keyState == keyStatePrevious && keyState) {
