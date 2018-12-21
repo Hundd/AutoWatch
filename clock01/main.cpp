@@ -577,12 +577,27 @@ uint8_t keyChecker()
 */
 	static uint8_t keyStatePrevious = 0;
 	static uint16_t times = 0;
+	static uint16_t idleTimes = 0;
 	static uint8_t savedKeyState = 0;
+	static bool keyCheckEnabled = false;
 	uint8_t keyState = PIND;
 	keyState = (~keyState >> 3) & 3;
-
-	if (keyState == keyStatePrevious && keyState)
+	
+	if (!keyCheckEnabled && keyState == keyStatePrevious && keyState == 0)
 	{
+		idleTimes += 1;
+
+		if (idleTimes > 100)
+		{
+			keyCheckEnabled = true;
+			idleTimes = 0;
+		}
+	}
+
+	if (keyCheckEnabled && keyState == keyStatePrevious && keyState)
+	{
+		idleTimes = 0;
+		
 		if (times < 1500)
 		{
 			times += 1;
@@ -595,13 +610,17 @@ uint8_t keyChecker()
 		if (times == 600)
 		{
 			longBeep();
-			savedKeyState = 3;
+			keyCheckEnabled = false;
+			savedKeyState = 0;
+			
+			return 3;
 		}
 	}
 	else if (savedKeyState)
 	{
 		uint8_t tempKeyState = savedKeyState;
 		savedKeyState = 0;
+		keyCheckEnabled = false;
 
 		return tempKeyState;
 	}
