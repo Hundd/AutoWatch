@@ -4,12 +4,13 @@
  * Created: 13.08.2016 13:55:52
  *  Author: Hundd
  */
- #pragma once
+#pragma once
 #ifndef MAINHEADER 
 	#define MAINHEADER
 	
 	#define F_CPU 8000000L
 	#include <avr/io.h>
+	#include <avr/eeprom.h>
 	#include <avr/interrupt.h>
 	#include <util/delay.h>
 	void rtcInit();
