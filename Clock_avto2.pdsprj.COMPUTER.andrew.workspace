@@ -65,7 +65,7 @@
      <ITEM name="TopLineAddress">00000000</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="16" x="158" flags="80000000" y="249" h="32" pid="14" iid="1">
+   <POPUP w="16" x="158" flags="00000000" y="249" h="32" pid="14" iid="1">
     <PROPERTIES>
      <ITEM name="DataType">2</ITEM>
      <ITEM name="DispChars">Yes</ITEM>
@@ -130,15 +130,15 @@
    </POPUP>
    <POPUP w="694" x="757" flags="0000002a" y="229" h="637" pid="1" iid="1">
     <PROPERTIES>
-     <ITEM name="Breakpoint 0">"main",129E,0086,98FA,0F07,-1
+     <ITEM name="Breakpoint 0">"main",1316,00AE,B38F,0F07,-1
 </ITEM>
-     <ITEM name="Breakpoint 1">"__mulsf3x",FFFFFFFF,E54F,0780,0F07,-1
+     <ITEM name="Breakpoint 1">"eeprom_write_byte",FFFFFFFF,E399,0780,0F07,-1
 </ITEM>
-     <ITEM name="Breakpoint 2">"_Z10setupHoursv",0F70,00CE,3C28,0F07,-1
+     <ITEM name="Breakpoint 2">"_Z10setupHoursv",0FC0,00CE,3C28,0F07,-1
 </ITEM>
-     <ITEM name="Breakpoint 3">"_Z14clrScreenArrayv",0F8A,0010,BE92,0F07,-1
+     <ITEM name="Breakpoint 3">"_Z14clrScreenArrayv",0FDA,0010,BE92,0F07,-1
 </ITEM>
-     <ITEM name="Breakpoint 4">"_Z18checki2cReturnCodeh",139E,0016,57A1,098E,-1
+     <ITEM name="Breakpoint 4">"_Z18checki2cReturnCodeh",1416,0016,57A1,098E,-1
 </ITEM>
      <ITEM name="CaseSensitive">No</ITEM>
      <ITEM name="DISPADDRS">Yes</ITEM>

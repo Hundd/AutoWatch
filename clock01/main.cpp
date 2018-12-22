@@ -203,6 +203,7 @@ uint8_t timerMode()
 	uint8_t currentSeconds = 0;
 	uint8_t lastSeconds = 0;
 	uint16_t secondsTotal = 0;
+	uint16_t idleTimerCounter = 0;
 	bool conunerEnabled = false;
 	bool buzzering = false;
 	resetTimer();
@@ -216,6 +217,17 @@ uint8_t timerMode()
 		if (conunerEnabled && currentSeconds != lastSeconds)
 		{
 			secondsTotal += 1;
+			idleTimerCounter = 0;
+		}
+		
+		if (!conunerEnabled && currentSeconds != lastSeconds)
+		{
+			idleTimerCounter += 1;
+			if (idleTimerCounter > 15 * 60)
+			{
+				// Move to main screen
+				return 0;
+			}
 		}
 
 		lastSeconds = currentSeconds;
