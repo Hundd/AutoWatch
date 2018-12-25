@@ -191,10 +191,22 @@ uint8_t setupTimer()
 
 void displaySeconds(uint16_t secondsTotal)
 {
+	// seconds
 	screen_arr[0] = secondsTotal % 10;
 	screen_arr[1] = secondsTotal % 60 / 10;
+	// minutes
 	screen_arr[2] = secondsTotal / 60 % 10;
 	screen_arr[3] = secondsTotal / 60 / 10;
+}
+
+void displayMinutes(uint16_t minutesTotal)
+{
+	// minutes
+	screen_arr[0] = minutesTotal % 10;
+	screen_arr[1] = minutesTotal % 60 / 10;
+	// hours
+	screen_arr[2] = minutesTotal / 60 % 10;
+	screen_arr[3] = minutesTotal / 60 / 10;
 }
 
 uint8_t timerMode()
@@ -232,7 +244,15 @@ uint8_t timerMode()
 
 		lastSeconds = currentSeconds;
 
-		displaySeconds(secondsTotal);
+		if (secondsTotal < 60 * 60)
+		{
+			displaySeconds(secondsTotal);
+		} 
+		else
+		{
+			displayMinutes(secondsTotal / 60);
+		}
+
 
 		if (conunerEnabled)
 		{
@@ -252,7 +272,7 @@ uint8_t timerMode()
 			}
 		}
 
-		if (secondsTotal > 15 * 60)
+		if (secondsTotal > (uint16_t)720 * 60)
 		{
 			return 0;
 		}
